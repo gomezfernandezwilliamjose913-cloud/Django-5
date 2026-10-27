@@ -1,0 +1,20 @@
+{% extends 'peliculas/base.html' %}
+
+{% block titulo %}Eliminar {{ pelicula.titulo }} | Cineclub{% endblock %}
+
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <section class="panel text-center p-4 p-md-5">
+            <p class="eyebrow">Confirmación</p>
+            <h1 class="h3 fw-bold">¿Eliminar esta película?</h1>
+            <p class="text-secondary">Se quitará <strong class="text-white">{{ pelicula.titulo }} ({{ pelicula.anio }})</strong> de tu colección. Esta acción no se puede deshacer.</p>
+            <form method="post" class="d-flex justify-content-center gap-2 mt-4">
+                {% csrf_token %}
+                <a href="{% url 'peliculas:detalle' pelicula.pk %}" class="btn btn-outline-light">Cancelar</a>
+                <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#11131b">
+    <title>{% block titulo %}Cineclub{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --night: #11131b; --panel: #1b1e29; --line: #2b2f3c; --gold: #f0bf5b; --muted: #a4a8b5; }
+        body { min-height: 100vh; background: #141620; color: #f4f3ef; font-family: Inter, "Segoe UI", sans-serif; }
+        .navbar { background: rgba(17,19,27,.96); border-bottom: 1px solid var(--line); }
+        .brand { color: #fff; font-weight: 800; letter-spacing: -.04em; font-size: 1.3rem; }
+        .brand span { color: var(--gold); }
+        .nav-link { color: #c4c6ce; }
+        .nav-link:hover { color: var(--gold); }
+        .page { max-width: 1200px; }
+        .eyebrow { color: var(--gold); font-size: .75rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+        .text-secondary { color: var(--muted) !important; }
+        .card, .panel { color: #f4f3ef; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+        .stat-card { min-height: 124px; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; }
+        .form-control, .form-select { color: #f4f3ef; background-color: #171923; border-color: #363a49; border-radius: 10px; padding: .7rem .8rem; }
+        .form-control:focus, .form-select:focus { color: #fff; background-color: #171923; border-color: var(--gold); box-shadow: 0 0 0 .2rem #f0bf5b22; }
+        .form-control::placeholder { color: #777d8d; }
+        .form-select option { background: #171923; }
+        .form-label { color: #d9d9df; }
+        .btn-gold { color: #171923; background: var(--gold); border-color: var(--gold); font-weight: 700; }
+        .btn-gold:hover { color: #171923; background: #ffd47c; border-color: #ffd47c; }
+        .btn-outline-light { border-color: #555968; }
+        .movie-card { height: 100%; overflow: hidden; transition: transform .18s ease, border-color .18s ease; }
+        .movie-card:hover { transform: translateY(-4px); border-color: #6b5b39; }
+        .poster { aspect-ratio: 2 / 2.8; width: 100%; object-fit: cover; background: linear-gradient(145deg, #34303b, #1d202b 65%, #56452c); }
+        .poster-empty { display: grid; place-items: center; padding: 1.5rem; color: #d6bd8b; text-align: center; font-family: Georgia, serif; font-size: 1.5rem; }
+        .badge-status { color: #f1d89b; background: #514329; }
+        .movie-title { color: #fff; text-decoration: none; }
+        .movie-title:hover { color: var(--gold); }
+        .alert { border: 1px solid var(--line); }
+        .alert-success { color: #d5f3df; background: #183728; }
+        .alert-error, .alert-danger { color: #ffe1df; background: #462729; }
+        .alert-warning { color: #ffedc7; background: #493a20; }
+        .table { --bs-table-bg: transparent; --bs-table-color: #f4f3ef; --bs-table-border-color: var(--line); }
+        .pagination .page-link { color: #f4f3ef; background: var(--panel); border-color: var(--line); }
+        .pagination .active .page-link { color: #171923; background: var(--gold); border-color: var(--gold); }
+        a { text-underline-offset: 3px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container page">
+            <a class="navbar-brand brand" href="{% url 'peliculas:lista' %}">CINE<span>CLUB</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menu">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                    <a class="nav-link" href="{% url 'peliculas:lista' %}">Mi colección</a>
+                    <a class="btn btn-gold btn-sm px-3 ms-lg-2" href="{% url 'peliculas:crear' %}">+ Agregar película</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <main class="container page py-4 py-lg-5">
+        {% if messages %}
+        <div class="mb-3" aria-live="polite">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block contenido %}{% endblock %}
+    </main>
+    <footer class="container page py-4 text-secondary small border-top" style="border-color: #2b2f3c !important">
+        Tu colección de cine, organizada a tu manera.
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+{% extends 'peliculas/base.html' %}
+
+{% block titulo %}Mi colección | Cineclub{% endblock %}
+
+{% block contenido %}
+<section class="row align-items-end g-3 mb-4">
+    <div class="col-lg">
+        <p class="eyebrow mb-2">Tu videoteca personal</p>
+        <h1 class="display-5 fw-bold mb-2">Historias que <span style="color: var(--gold)">merecen</span> quedarse.</h1>
+        <p class="text-secondary mb-0">Organiza lo que ya viste y encuentra tu próxima película.</p>
+    </div>
+    <div class="col-lg-auto">
+        <a href="{% url 'peliculas:crear' %}" class="btn btn-gold px-4 py-2">+ Agregar película</a>
+    </div>
+</section>
+
+<section class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="card stat-card p-3 p-lg-4"><div class="text-secondary small">En tu colección</div><div class="stat-value">{{ total_peliculas }}</div></div></div>
+    <div class="col-6 col-lg-3"><div class="card stat-card p-3 p-lg-4"><div class="text-secondary small">Pendientes</div><div class="stat-value">{{ pendientes }}</div></div></div>
+    <div class="col-6 col-lg-3"><div class="card stat-card p-3 p-lg-4"><div class="text-secondary small">Ya vistas</div><div class="stat-value">{{ vistas }}</div></div></div>
+    <div class="col-6 col-lg-3"><div class="card stat-card p-3 p-lg-4"><div class="text-secondary small">Tu puntuación media</div><div class="stat-value">{% if promedio is not None %}{{ promedio|floatformat:1 }} <span style="color: var(--gold)">★</span>{% else %}—{% endif %}</div></div></div>
+</section>
+
+<section class="panel p-3 p-lg-4 mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-12 col-lg-5">
+            <label for="q" class="form-label small">Buscar película o director</label>
+            <input id="q" type="search" name="q" value="{{ busqueda }}" class="form-control" placeholder="Ej. Interstellar, Nolan...">
+        </div>
+        <div class="col-6 col-lg-2">
+            <label for="genero" class="form-label small">Género</label>
+            <select id="genero" name="genero" class="form-select">
+                <option value="">Todos</option>
+                {% for valor, etiqueta in generos %}
+                <option value="{{ valor }}" {% if genero_seleccionado == valor %}selected{% endif %}>{{ etiqueta }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-6 col-lg-2">
+            <label for="estado" class="form-label small">Estado</label>
+            <select id="estado" name="estado" class="form-select">
+                <option value="">Todos</option>
+                {% for valor, etiqueta in estados %}
+                <option value="{{ valor }}" {% if estado_seleccionado == valor %}selected{% endif %}>{{ etiqueta }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-6 col-lg-2">
+            <label for="orden" class="form-label small">Ordenar</label>
+            <select id="orden" name="orden" class="form-select">
+                <option value="recientes" {% if orden_seleccionado == "recientes" %}selected{% endif %}>Agregadas recientemente</option>
+                <option value="titulo" {% if orden_seleccionado == "titulo" %}selected{% endif %}>Título</option>
+                <option value="anio" {% if orden_seleccionado == "anio" %}selected{% endif %}>Año</option>
+                <option value="puntuacion" {% if orden_seleccionado == "puntuacion" %}selected{% endif %}>Puntuación</option>
+            </select>
+        </div>
+        <div class="col-6 col-lg-1 d-grid">
+            <button class="btn btn-outline-light" type="submit">Buscar</button>
+        </div>
+    </form>
+</section>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 fw-bold mb-0">Películas <span class="text-secondary fw-normal fs-6">({{ pagina.paginator.count }})</span></h2>
+    {% if busqueda or genero_seleccionado or estado_seleccionado %}
+    <a class="link-light small" href="{% url 'peliculas:lista' %}">Limpiar filtros</a>
+    {% endif %}
+</div>
+
+<section class="row g-3 g-lg-4">
+    {% for pelicula in peliculas %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <article class="card movie-card">
+            <a href="{% url 'peliculas:detalle' pelicula.pk %}" class="text-decoration-none">
+                {% if pelicula.imagen_url %}
+                <img class="poster" src="{{ pelicula.imagen_url }}" alt="Póster de {{ pelicula.titulo }}" loading="lazy">
+                {% else %}
+                <div class="poster poster-empty">{{ pelicula.titulo }}</div>
+                {% endif %}
+            </a>
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                    <span class="badge badge-status text-truncate">{{ pelicula.get_estado_display }}</span>
+                    {% if pelicula.puntuacion is not None %}<span class="small text-nowrap" style="color: var(--gold)">★ {{ pelicula.puntuacion|floatformat:1 }}</span>{% endif %}
+                </div>
+                <h3 class="h6 fw-bold mb-1 text-truncate"><a class="movie-title" href="{% url 'peliculas:detalle' pelicula.pk %}">{{ pelicula.titulo }}</a></h3>
+                <p class="text-secondary small mb-0">{{ pelicula.anio }} · {{ pelicula.get_genero_display }}</p>
+            </div>
+        </article>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="panel text-center py-5 px-3">
+            <div class="display-6 mb-2">🎬</div>
+            <h3 class="h5 fw-bold">{% if busqueda or genero_seleccionado or estado_seleccionado %}No encontramos películas{% else %}Tu colección empieza aquí{% endif %}</h3>
+            <p class="text-secondary">{% if busqueda or genero_seleccionado or estado_seleccionado %}Prueba con otros términos o limpia los filtros.{% else %}Agrega una película para crear tu videoteca personal.{% endif %}</p>
+            {% if not busqueda and not genero_seleccionado and not estado_seleccionado %}<a href="{% url 'peliculas:crear' %}" class="btn btn-gold">Agregar primera película</a>{% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+{% if pagina.has_other_pages %}
+<nav class="mt-4" aria-label="Páginas de películas">
+    <ul class="pagination justify-content-center">
+        {% if pagina.has_previous %}<li class="page-item"><a class="page-link" href="?q={{ busqueda|urlencode }}&genero={{ genero_seleccionado }}&estado={{ estado_seleccionado }}&orden={{ orden_seleccionado }}&page={{ pagina.previous_page_number }}">Anterior</a></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ pagina.number }} / {{ pagina.paginator.num_pages }}</span></li>
+        {% if pagina.has_next %}<li class="page-item"><a class="page-link" href="?q={{ busqueda|urlencode }}&genero={{ genero_seleccionado }}&estado={{ estado_seleccionado }}&orden={{ orden_seleccionado }}&page={{ pagina.next_page_number }}">Siguiente</a></li>{% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

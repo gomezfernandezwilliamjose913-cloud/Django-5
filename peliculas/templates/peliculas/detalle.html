@@ -1,0 +1,33 @@
+{% extends 'peliculas/base.html' %}
+
+{% block titulo %}{{ pelicula.titulo }} ({{ pelicula.anio }}) | Cineclub{% endblock %}
+
+{% block contenido %}
+<p class="mb-4"><a class="link-light text-decoration-none" href="{% url 'peliculas:lista' %}">← Volver a mi colección</a></p>
+<article class="row g-4 g-lg-5 align-items-start">
+    <div class="col-sm-5 col-lg-4">
+        {% if pelicula.imagen_url %}
+        <img src="{{ pelicula.imagen_url }}" alt="Póster de {{ pelicula.titulo }}" class="poster rounded-4 border" style="border-color: var(--line) !important">
+        {% else %}
+        <div class="poster poster-empty rounded-4 border" style="border-color: var(--line) !important">{{ pelicula.titulo }}</div>
+        {% endif %}
+    </div>
+    <div class="col-lg-8">
+        <p class="eyebrow mb-2">{{ pelicula.get_genero_display }} · {{ pelicula.anio }}</p>
+        <h1 class="display-4 fw-bold mb-2">{{ pelicula.titulo }}</h1>
+        <p class="text-secondary fs-5 mb-4">{% if pelicula.director %}Dirigida por {{ pelicula.director }}{% else %}Director no registrado{% endif %}{% if pelicula.duracion %} · {{ pelicula.duracion }} min{% endif %}</p>
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
+            <span class="badge badge-status fs-6">{{ pelicula.get_estado_display }}</span>
+            {% if pelicula.puntuacion is not None %}<span class="badge fs-6" style="background: #514329; color: var(--gold)">★ {{ pelicula.puntuacion|floatformat:1 }} / 10</span>{% endif %}
+        </div>
+        <section class="panel p-4 mb-4">
+            <h2 class="h5 fw-bold">Sinopsis</h2>
+            <p class="text-secondary mb-0" style="white-space: pre-line">{% if pelicula.sinopsis %}{{ pelicula.sinopsis }}{% else %}No agregaste una sinopsis para esta película.{% endif %}</p>
+        </section>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'peliculas:editar' pelicula.pk %}" class="btn btn-gold px-4">Editar película</a>
+            <a href="{% url 'peliculas:eliminar' pelicula.pk %}" class="btn btn-outline-light">Eliminar</a>
+        </div>
+    </div>
+</article>
+{% endblock %}
